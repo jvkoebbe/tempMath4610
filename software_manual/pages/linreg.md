@@ -45,51 +45,93 @@ end of the second value).
 
 Implementation/Code: The following is the code for smaceps()
 
-  subroutine smaceps(seps, ipow)
-c
-c set up storage for the algorithm
-c --------------------------------
-c
-      real seps, one, appone
-c
-c initialize variables to compute the machine value near 1.0
-c ----------------------------------------------------------
-c
-      one = 1.0
-      seps = 1.0
-      appone = one + seps
-c
-c loop, dividing by 2 each time to determine when the difference between one and
-c the approximation is zero in single precision
-c --------------------------------------------- 
-c
-      ipow = 0
-      do 1 i=1,1000
-         ipow = ipow + 1
-c
-c update the perturbation and compute the approximation to one
-c ------------------------------------------------------------
-c
-        seps = seps / 2
-        appone = one + seps
-c
-c do the comparison and if small enough, break out of the loop and return
-c control to the calling code
-c ---------------------------
-c
-        if(abs(appone-one) .eq. 0.0) return
-c
-    1 continue
-c
-c if the code gets to this point, there is a bit of trouble
-c ---------------------------------------------------------
-c
-      print *,"The loop limit has been exceeded"
-c
-c done
-c ----
-c
-      return
-end
+```
+import java.io.*;
+import java.util.Random;
+
+public class LinearRegression extends Object
+{
+  //
+  // this method will do a standard linear regression on the input data
+  // ------------------------------------------------------------------
+  //
+  double [] linreg(double [] x, double [] y)
+  {
+    //
+    // determine the number of entries in the two data arrays
+    // ------------------------------------------------------
+    //
+    int n = x.length;
+    double cval, rval;
+    double [] output = new double[2];
+    //
+    // initialize the matrix variables
+    // -------------------------------
+    //
+    a11 = 0.0;
+    a12 = 0.0;
+    a21 = 0.0;
+    a22 = 0.0;
+    b1 = 0.0;
+    b2 = 0.0;
+    //
+    // loop over data
+    // --------------
+    //
+    a11 = (double) n;
+    for(int k=0; k<n; k++)
+    {
+      a12 = a12 + x[k];
+      a22 = a22 + x[k] * x[k];
+      b1 = b1 + y[k];
+      b2 = b2 + x[k] * y[k];
+    }
+    a21 = a12;
+    //
+    // write out the solution for the system using the 2x2 formula
+    // ------------------------------------------------------------
+    //
+    detval = a11 * a22 - a12 * a21;
+    cval = ( a22 * b1 - a12 * b2 ) / detval;
+    rval = ( - a21 * b1 + a11 * b2 ) / detval;
+    //
+    // return the values
+    // -----------------
+    //
+    output[0] = cval;
+    output[1] = rval;
+    return output;
+    //
+  }
+
+  public static void main(String args[]) {
+    LinearRegression lr = new LinearRegression();
+    Random r = new Random();
+    int nd = 101;
+    double dx = 1.0 / ((double) nd);
+    double [] x = new double[nd];
+    double [] y = new double[nd];
+    for(int i=0; i<nd; i++)
+    {
+      x[i] = ((double) i) * dx; 
+      y[i] = 2.0 * x[i] * x[i] + 0.001 * r.nextDouble();
+    }
+    double [] output = lr.linreg(x, y);
+    System.out.println("Constant value:    " + output[0]);
+    System.out.println("Slope value:    " + output[1]);
+    //
+  }
+
+  //
+  // local variables
+  // ---------------
+  //
+  public double a11, a12, a21, a22;
+  public double b1, b2;
+  public double detval = 0.0;
+
+}
+
+```
 
 Last Modified: September/2017
